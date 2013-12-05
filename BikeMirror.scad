@@ -27,13 +27,17 @@ connectorCube = [MirrorBallOffset-MirrorBallRadius+MirrorCircleWallThickness*2,M
 connectorStartPoint = [mirrorCircleRadius-MirrorCircleWallThickness,0,mirrorCircleZeroZ];
 
 connectorCenter = forVectorAtIndexAddNum(connectorStartPoint,0,connectorCube[0]/2);
-cutCylinderRadius = 5;
-cutCylinderCenter = forVectorAtIndexAddNum(connectorCenter,1,cutCylinderRadius+1);
+cutCylinderRadius = 4.5;
+cutCylinderCenter = forVectorAtIndexAddNum(connectorCenter,1,cutCylinderRadius+1.5);
 difference() {
 	cubeStartCenteredOnPoint(connectorCube, connectorStartPoint);
 	//cylinder side cut
-	translate(cutCylinderCenter)
+	translate(cutCylinderCenter) 
 	cylinder(h=10,r=cutCylinderRadius,center=true, $fn=50);
+	mirror([0,-1,0])
+	translate(cutCylinderCenter) 
+	cylinder(h=10,r=cutCylinderRadius,center=true, $fn=50);
+	
 }
 
 function forVectorAtIndexAddNum(vector,index,num) = [index==0?vector[0]+num:vector[0],
