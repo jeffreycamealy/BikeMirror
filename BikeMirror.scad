@@ -53,43 +53,15 @@ module mirrorCircleBallConnector() {
 }
 
 module bikeMirrorAndBall() {
-	bikeMirror();
+	// bikeMirror();
 	mirrorCircleHolder();
 	mirrorBall();
 	mirrorCircleBallConnector();
 }
 
-
-// Mirror: Circle-Ball connector
-
-
-// Main beam
-// Cup
-// SpoonRadius = 6;
-// spoonCutterCube = [(SpoonRadius+1)*2,SpoonRadius+1,(SpoonRadius+1)*2];
-// barCube = [10, SpoonRadius/2,SpoonRadius*.75];
-// // hull() {
-// 	spoonHalf();
-// 	sphere(MirrorBallRadius);
-// 	// translate([SpoonRadius, 0, -barCube[2]/2]) cube(barCube);
-// // }
-
-// module spoonHalf() {
-// 	difference() {
-// 		sphere(SpoonRadius);
-// 		translate([-spoonCutterCube[0]/2,-spoonCutterCube[1],-spoonCutterCube[2]/2]) cube(spoonCutterCube);
-// 	}
-// }
-
-
-// minkowski() {
-// 	translate([-10,0,0]) scale([1,1,3]) rotate(45,[0,1,0]) cube(11,1,1);
-// 	scale([1.0,2.0,3.0]) sphere(r=5.0); 
-// }
-
-// translate([0,-50,0]) scale([1,1,3]) rotate(45,[0,1,0]) cube(11,1,1);
-// translate([0,-20,0]) scale([1.0,2.0,3.0]) sphere(r=5.0); 
-
+///////////////////
+///// UTILITIES
+///////////////////
 function forVectorAtIndexAddNum(vector,index,num) = [index==0?vector[0]+num:vector[0],
 													index==1?vector[1]+num:vector[1],
 													index==2?vector[2]+num:vector[2]];
@@ -103,3 +75,38 @@ module cubeStartCenteredOnPoint(c,p) {
 		cube(c);
 	}
 }
+
+/////////////////
+// Main beam
+/////////////////
+// Cup
+
+// Derived Vars
+spoonRadius = MirrorBallRadius*1.2;
+spoonCutterCube = [(spoonRadius+1)*2,spoonRadius+1,(spoonRadius+1)*2];
+barCube = [10, spoonRadius/2,spoonRadius*.75];
+
+// Build Object
+// spoonWithHead();
+
+module spoonHalf() {
+	difference() {
+		sphere(spoonRadius);
+		translate([-spoonCutterCube[0]/2,-spoonCutterCube[1],-spoonCutterCube[2]/2]) cube(spoonCutterCube);
+	}
+}
+
+module spoonBlankWithHead() {
+	hull() {
+		spoonHalf();
+		translate([spoonRadius, 0, -barCube[2]/2]) cube(barCube);
+	}
+}
+
+module spoonWithHead() {
+	difference() {
+		spoonBlankWithHead();
+		sphere(MirrorBallRadius);
+	}
+}
+
