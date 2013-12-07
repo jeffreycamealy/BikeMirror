@@ -5,14 +5,24 @@ MirrorCircleWallThickness = 2.016;
 MirrorCircleWallBufferSpace = .2;
 MirrorCircleWallHeight = 4.95;
 
+// Mirror Ball
+MirrorBallOffset = 8;
+MirrorBallRadius = 5;
+
 // Derived measurements
 mirrorCircleRadius = MirrorRadius+MirrorCircleWallBufferSpace+MirrorCircleWallThickness;
+mirrorCircleZeroZ = MirrorCircleWallHeight/2;
 
-// Mirror
-translate([0,0,1.15]) color("Gainsboro") cylinder(3.3,MirrorRadius,MirrorRadius);
+// Derived Objects
+connectorCube = [MirrorBallOffset-MirrorBallRadius+MirrorCircleWallThickness*2,MirrorBallRadius,MirrorCircleWallHeight-1];
+connectorStartPoint = [mirrorCircleRadius-MirrorCircleWallThickness,0,mirrorCircleZeroZ];
 
-// Mirror Circle Holder
-mirrorCircleHolder();
+// Build Object
+bikeMirrorAndBall();
+
+module bikeMirror() {
+	translate([0,0,1.15]) color("Gainsboro") cylinder(3.3,MirrorRadius,MirrorRadius);
+}
 
 module mirrorCircleHolder() {
 	difference() {
@@ -22,29 +32,36 @@ module mirrorCircleHolder() {
 	} 
 }
 
-// Mirror Ball
-MirrorBallOffset = 8;
-MirrorBallRadius = 5;
-mirrorCircleZeroZ = MirrorCircleWallHeight/2;
-translate([mirrorCircleRadius+MirrorBallOffset,0,mirrorCircleZeroZ]) sphere(MirrorBallRadius);
-
-// Mirror: Circle-Ball connector
-connectorCube = [MirrorBallOffset-MirrorBallRadius+MirrorCircleWallThickness*2,MirrorBallRadius,MirrorCircleWallHeight-1];
-connectorStartPoint = [mirrorCircleRadius-MirrorCircleWallThickness,0,mirrorCircleZeroZ];
+module mirrorBall() {
+	translate([mirrorCircleRadius+MirrorBallOffset,0,mirrorCircleZeroZ]) sphere(MirrorBallRadius);
+}
 
 connectorCenter = forVectorAtIndexAddNum(connectorStartPoint,0,connectorCube[0]/2);
 cutCylinderRadius = 4.5;
 cutCylinderCenter = forVectorAtIndexAddNum(connectorCenter,1,cutCylinderRadius+1.5);
-difference() {
-	cubeStartCenteredOnPoint(connectorCube, connectorStartPoint);
-	//cylinder side cut
-	translate(cutCylinderCenter) 
-	cylinder(h=10,r=cutCylinderRadius,center=true, $fn=50);
-	mirror([0,-1,0])
-	translate(cutCylinderCenter) 
-	cylinder(h=10,r=cutCylinderRadius,center=true, $fn=50);
-	
+module mirrorCircleBallConnector() {
+	difference() {
+		cubeStartCenteredOnPoint(connectorCube, connectorStartPoint);
+		//cylinder side cut
+		translate(cutCylinderCenter) 
+		cylinder(h=10,r=cutCylinderRadius,center=true, $fn=50);
+		mirror([0,-1,0])
+		translate(cutCylinderCenter) 
+		cylinder(h=10,r=cutCylinderRadius,center=true, $fn=50);
+		
+	}
 }
+
+module bikeMirrorAndBall() {
+	bikeMirror();
+	mirrorCircleHolder();
+	mirrorBall();
+	mirrorCircleBallConnector();
+}
+
+
+// Mirror: Circle-Ball connector
+
 
 // Main beam
 // Cup
