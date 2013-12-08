@@ -18,7 +18,7 @@ connectorCube = [MirrorBallOffset-MirrorBallRadius+MirrorCircleWallThickness*2,M
 connectorStartPoint = [mirrorCircleRadius-MirrorCircleWallThickness,0,mirrorCircleZeroZ];
 
 // Build Object
-bikeMirrorAndBall();
+// bikeMirrorAndBall();
 
 module bikeMirror() {
 	translate([0,0,1.15]) color("Gainsboro") cylinder(3.3,MirrorRadius,MirrorRadius);
@@ -79,7 +79,8 @@ module cubeStartCenteredOnPoint(c,p) {
 /////////////////
 // Main beam
 /////////////////
-// Cup
+// Constants
+SpoonHoleLessPercentage = 1/3;
 
 // Derived Vars
 spoonRadius = MirrorBallRadius*1.2;
@@ -87,7 +88,11 @@ spoonCutterCube = [(spoonRadius+1)*2,spoonRadius+1,(spoonRadius+1)*2];
 barCube = [10, spoonRadius/2,spoonRadius*.75];
 
 // Build Object
-// spoonWithHead();
+color(0.9,0.6,1,0.1)
+spoonArmWithOffset();
+mirror([0,1,0]) spoonArmWithOffset();
+// color(0.0,0.6,0,0.1)
+// sphere(MirrorBallRadius);
 
 module spoonHalf() {
 	difference() {
@@ -106,7 +111,19 @@ module spoonBlankWithHead() {
 module spoonWithHead() {
 	difference() {
 		spoonBlankWithHead();
-		sphere(MirrorBallRadius);
+		translate([0,-MirrorBallRadius*SpoonHoleLessPercentage,0]) sphere(MirrorBallRadius);
+	}
+		// translate([0,-MirrorBallRadius*SpoonHoleLessPercentage,0]) sphere(MirrorBallRadius);
+}
+
+module spoonArmWithOffset() {
+	translate([-spoonRadius,0,0]) {
+		rotate([0,0,2],[-10,0,1]) {
+			translate([spoonRadius,MirrorBallRadius*1/20]) {
+				spoonWithHead();
+				translate([spoonRadius+barCube[0],0,-barCube[2]/2]) cube([23,barCube[1],barCube[2]]);
+			}
+		}
 	}
 }
 
