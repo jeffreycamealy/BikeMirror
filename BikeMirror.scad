@@ -81,18 +81,27 @@ module cubeStartCenteredOnPoint(c,p) {
 /////////////////
 // Constants
 SpoonHoleLessPercentage = 1/3;
+SpoonArmInsetAngle = 2;
 
 // Derived Vars
 spoonRadius = MirrorBallRadius*1.2;
 spoonCutterCube = [(spoonRadius+1)*2,spoonRadius+1,(spoonRadius+1)*2];
 barCube = [10, spoonRadius/2,spoonRadius*.75];
+spoonArmCube = [24.6,barCube[1],barCube[2]];
+spoonArmLength = spoonRadius+barCube[0]+spoonArmCube[0];
+spoonArmDriftDueToRotation = sin(SpoonArmInsetAngle)*spoonArmLength;
+spoonBallLessOffset = -MirrorBallRadius*SpoonHoleLessPercentage;
+spoonArmOffsetFromXAxis = MirrorBallRadius*1/20;
+spoonArmFootDistanceFromXAxis = spoonArmDriftDueToRotation+abs(spoonArmOffsetFromXAxis*2);
+spoonArmFootXTravel = cos(SpoonArmInsetAngle)*spoonArmLength;
+armsCapCube = [5,(spoonArmFootDistanceFromXAxis+spoonArmCube[1])*2,spoonArmCube[2]];
 
 // Build Object
-color(0.9,0.6,1,0.1)
-spoonArmWithOffset();
-mirror([0,1,0]) spoonArmWithOffset();
-// color(0.0,0.6,0,0.1)
-// sphere(MirrorBallRadius);
+spoonArms();
+spoonArmsJoint();
+
+// resize([10,20,30])
+
 
 module spoonHalf() {
 	difference() {
@@ -111,19 +120,36 @@ module spoonBlankWithHead() {
 module spoonWithHead() {
 	difference() {
 		spoonBlankWithHead();
-		translate([0,-MirrorBallRadius*SpoonHoleLessPercentage,0]) sphere(MirrorBallRadius);
+		translate([0,spoonBallLessOffset,0]) sphere(MirrorBallRadius);
 	}
-		// translate([0,-MirrorBallRadius*SpoonHoleLessPercentage,0]) sphere(MirrorBallRadius);
+		// translate([016,-MirrorBallRadius*SpoonHoleLessPercentage,0]) sphere(MirrorBallRadius);
 }
 
 module spoonArmWithOffset() {
-	translate([-spoonRadius,0,0]) {
-		rotate([0,0,2],[-10,0,1]) {
-			translate([spoonRadius,MirrorBallRadius*1/20]) {
+	translate([-spoonRadius,spoonArmOffsetFromXAxis,0]) {
+	// translate([-spoonRadius,0,0]) {
+		rotate([0,0,SpoonArmInsetAngle]) {
+			translate([spoonRadius,0,0]) {
 				spoonWithHead();
-				translate([spoonRadius+barCube[0],0,-barCube[2]/2]) cube([23,barCube[1],barCube[2]]);
+				// add Arm
+				translate([spoonRadius+barCube[0],0,-barCube[2]/2]) cube(spoonArmCube);
 			}
 		}
+	}
+}
+
+module spoonArms() {
+	spoonArmWithOffset();
+	mirror([0,1,0]) spoonArmWithOffset();
+}
+
+module spoonArmsJoint() {
+	difference() {
+		hull() {
+			translate([spoonArmFootXTravel-0.5,-armsCapCube[1]/2,-spoonArmCube[2]/2]) cube(armsCapCube);
+			translate([spoonArmFootXTravel+2,-spoonArmCube[1],-spoonArmCube[2]/2]) cube([20,spoonArmCube[1]*2,spoonArmCube[2]]);
+		}
+		translate([spoonArmFootXTravel,0,-1/2*spoonArmCube[2]-0.5]) cylinder(spoonArmCube[2]+1, r=spoonArmFootDistanceFromXAxis, $fn=20);
 	}
 }
 
